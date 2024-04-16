@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, RefObject  } from "react";
 import { asImageSrc, isFilled } from "@prismicio/client";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -23,7 +23,7 @@ export default function ContentList({
   fallbackItemImage,
   viewMoreText = "Read More",
 }: ContentListProps) {
-  const component = useRef(null);
+  const component = useRef<HTMLUListElement>(null);
   const itemsRef = useRef<Array<HTMLLIElement | null>>([]);
 
   const revealRef = useRef(null);
@@ -32,6 +32,12 @@ export default function ContentList({
   const lastMousePos = useRef({ x: 0, y: 0 });
 
   const urlPrefix = contentType === "Blog" ? "/blog" : "/projects";
+
+
+  useEffect(() => {
+    const listItems = component.current?.querySelectorAll("li");
+    itemsRef.current = Array.from(listItems || []).map((item): HTMLLIElement | null => item || null);
+  }, []);
 
   useEffect(() => {
     // Animate list-items in with a stagger
@@ -133,6 +139,7 @@ export default function ContentList({
     });
   }, [contentImages]);
 
+
   return (
     <>
       <ul
@@ -142,10 +149,12 @@ export default function ContentList({
       >
         {items.map((post, index) => (
           <li
-            key={index}
-            onMouseEnter={() => onMouseEnter(index)}
-            className="list-item opacity-0"
-            ref={(el)=>(itemsRef.current[index]= el)}
+          key={index}
+          onMouseEnter={() => onMouseEnter(index)}
+          className="list-item opacity-0"
+          ref={(el) => {
+            itemsRef.current[index] = el;
+          }}
           >
             <Link
               href={`${urlPrefix}/${post.uid}`}
