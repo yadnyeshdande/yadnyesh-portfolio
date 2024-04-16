@@ -192,4 +192,21 @@ export default function ContentList({
   );
 }
 
+{/* 
+The problem lies in the type signature of the function passed to the ref prop. 
+According to the error message, the expected type for the ref prop is:
+(instance: HTMLLIElement | null) => void | (() => VoidOrUndefinedOnly)
+
+This means that the function passed to the ref prop should either return void (nothing) or a function that returns undefined or null.
+
+However, the function you're currently passing to the ref prop is:
+ref={(el: HTMLLIElement | null) => (itemsRef.current[index] = el)}
+
+
+The key change is in the function passed to the ref prop. 
+Instead of returning a value, I've modified the function to not return anything (void), which should satisfy the expected type signature.
+
+
+*/}
+
 // export default ContentList;
